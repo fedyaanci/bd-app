@@ -7,14 +7,14 @@ app = FastAPI(title="PictureMarket")
 app.include_router(auth.router, prefix="/api")
 
 
-# # import asyncio
-## from sqlalchemy import text
+import asyncio
+from sqlalchemy import text
 
-# # async def test_connection():
-# #     async with engine.connect() as conn:
-# #         result = await conn.execute(text("SELECT 1"))
-# #         print("✅ База данных подключена успешно")
+async def test_connection():
+    async with engine.connect() as conn:
+        result = await conn.execute(text("SELECT 1"))
+        print("✅ База данных подключена успешно")
 
 
-# # Запуск проверки
-# # asyncio.run(test_connection())
+# Запуск проверки
+asyncio.run(test_connection())

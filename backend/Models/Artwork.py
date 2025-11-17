@@ -1,9 +1,9 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Integer, String, Column, TIMESTAMP, ForeignKey, Table
+from sqlalchemy import Integer, String, Column, TIMESTAMP, ForeignKey
 from datetime import datetime
 
-Base = declarative_base()
+from Artwork_has_category import artwork_has_category
+from . import Base
 
 class Artwork(Base):
     __tablename__ = "artwork"
@@ -11,18 +11,13 @@ class Artwork(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
     image_url = Column(String, nullable=False)
-    artist_id = Column(Integer, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=False), default=datetime.utcnow)
+    artist_id = Column(Integer,ForeignKey("user.id"), nullable=False )
+    created_at = Column(TIMESTAMP(timezone=False), default=datetime.now)
 
 
     seller = relationship("User", back_populates="artworks")
     listings = relationship("Listing", back_populates="artwork")
+    categories = relationship('Category', secondary = artwork_has_category, back_poulates="artwork")
 
-artwork_has_category = Table(
-    'artwork_has_category',
-    Base.metadata,
-    Column('artwork_id', Integer, ForeignKey('artwork.id'), primary_key=True),
-    Column('category_id', Integer, ForeignKey('category.id'), primary_key=True)
-)
 
     
