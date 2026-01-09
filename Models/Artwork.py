@@ -22,8 +22,8 @@ class Artwork(Base):
     rating = relationship("Rating", backref="artwork")
     listing = relationship("Listing", backref="artwork")
     
-    category = relationship(
+    categories = relationship(
     "Category", 
     secondary=artwork_category,
-    back_populates="artwork"  
+    back_populates="artworks"  
 )

@@ -12,3 +12,10 @@ DATABASE_URL = os.getenv("DATABASE_URL") # должны поместить ту�
 engine = create_async_engine(DATABASE_URL) #создает асинхронное подключение (async await)
 
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False) # для созданий сессий бд с предуставнеовленными настройками
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

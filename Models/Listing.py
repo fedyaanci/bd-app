@@ -14,4 +14,4 @@ class Listing(Base):
     created_at = Column(TIMESTAMP, default=datetime.now)
     sold_at = Column(TIMESTAMP, nullable=True)  
 
-    order = relationship("Order", backref="listing", uselist=False)
+    order = relationship("Order", backref="Listing", uselist=False)
