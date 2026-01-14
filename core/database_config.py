@@ -13,9 +13,6 @@ engine = create_async_engine(DATABASE_URL) #создает асинхронно�
 
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False) # для созданий сессий бд с предуставнеовленными настройками
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db():
+    async with SessionLocal() as session:
+        yield session

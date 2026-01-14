@@ -1,13 +1,18 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
 class UserBase(BaseModel):
     username: str
     is_artist: bool = False
     avatar_url: str | None = None
 
 class UserCreate(UserBase):
-    password_hash: str
+    password: str #(открытый парорль только для входа)
 
 class UserUpdate(UserBase):
     password_hash: str | None = None
