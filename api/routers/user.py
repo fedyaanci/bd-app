@@ -71,6 +71,7 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(select(User).where(User.username == data.username))
+    
     user = result.scalar_one_or_none()
     
     if not user or not verify_password(data.password, user.password_hash):

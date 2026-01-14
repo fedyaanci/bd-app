@@ -1,23 +1,43 @@
 from models.user import User
+from models.category import Category
 from core.database_config import SessionLocal
 
-fedya = User(username='fedya20011', is_artist=False, password_hash='fjidgbwsfew', avatar_url='fedya.png')
+CATEGORIES = [
+    "Портрет",
+    "Пейзаж",
+    "Абстракция",
+    "Фэнтези",
+    "Минимализм",
+    "Реализм",
+    "Сюрреализм",
+    "Комиксы",
+    "Цифровая живопись",
+    "3D-арт"
+]
 
 import asyncio
 from sqlalchemy import select
+
 async def LoadDataToTable(obj):
-    try:
-        async with SessionLocal() as session:
-            session.add(obj)
+    async with SessionLocal() as session:
+        try:
+            existing_count = await session.execute(select(Category))
+            if existing_count.scalars().first() is not None:
+                print("✅ Категории уже загружены. Пропускаем.")
+                return
+
+            # Добавляем новые категории
+            for name in CATEGORIES:
+                category = Category(name=name)
+                session.add(category)
+            
             await session.commit()
-            await session.refresh(obj)
-            print('Y')
-            return True
-    except Exception as e:
-        print('N')
-        if session:
+            print(f"✅ Успешно добавлено {len(CATEGORIES)} категорий.")
+
+        except Exception as e:
+            print(f"❌ Ошибка при загрузке категорий: {e}")
             await session.rollback()
-        return False
+            raise
 
 async def DownloadUsers():
     try:
@@ -29,14 +49,15 @@ async def DownloadUsers():
         print(f"Ошибка при получении пользователей: {e}")
         return None
 
-#asyncio.run(LoadDataToTable(fedya))
+# asyncio.run(LoadDataToTable(CATEGORIES))
 
-async def main():
-    users = await DownloadUsers()
+#async def main():
+    # users = await DownloadUsers()
     
-    if users:
-        for user in users:
-            print(f"ID: {user.id}, Username: {user.username}, Is Artist: {user.is_artist}")
+    # if users:
+    #     for user in users:
+    #         print(f"ID: {user.id}, Username: {user.username}, Is Artist: {user.is_artist}")
 
-asyncio.run(main())
+
+#asyncio.run(main())
 

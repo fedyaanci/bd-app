@@ -9,11 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select  
 from core.database_config import get_db
 import models
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-
 ACCESS_TOKEN_EXPIRE_MINUTES=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES","30"))
 
 def create_access_token(user_id: int)->str:
@@ -22,7 +23,7 @@ def create_access_token(user_id: int)->str:
 
     payload = {
         "user_id": user_id,
-        "exp": expire  # автоматически проверится при декодировании
+        "exp": expire
     }
 
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
