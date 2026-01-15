@@ -1,36 +1,29 @@
-import os 
+import os
 from datetime import datetime, timedelta
-
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException, status
-from core.database_config import SessionLocal
 from jose import jwt, JWTError
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select  
+from sqlalchemy import select
+
 from core.database_config import get_db
-import models
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+from models.user import User
+from fastapi.security import HTTPBearer
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES","30"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-def create_access_token(user_id: int)->str:
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+security = HTTPBearer()
 
+def create_access_token(user_id: int) -> str:
     expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload = {"user_id": user_id, "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    payload = { # кто и до какого времени
-        "user_id": user_id,
-        "exp": expire
-    }
-
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM) # подписывает payload - возвращает строку-токен
-
-
-async def get_current_user( #эндпоинтам нужно знать, кто делает запрос
-    token: str = Depends(oauth2_scheme),
+async def get_current_user(
+    token: str,
     db: AsyncSession = Depends(get_db)
 ):
     credentials_exception = HTTPException(
@@ -46,7 +39,7 @@ async def get_current_user( #эндпоинтам нужно знать, кто 
     except JWTError:
         raise credentials_exception
 
-    result = await db.execute(select(models.User).where(models.User.id == user_id))
+    result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     
     if user is None:

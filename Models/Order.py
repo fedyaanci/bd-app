@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, ForeignKey, Column, TIMESTAMP
 from datetime import datetime
-from . import Base
+from core.database_config import Base
 
 class Order(Base):
     __tablename__ = "order"

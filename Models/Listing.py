@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, ForeignKey, Boolean, Column, Numeric, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from . import Base
+from core.database_config import Base
 
 class Listing(Base):
     __tablename__ = "listing"

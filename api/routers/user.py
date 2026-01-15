@@ -11,10 +11,19 @@ from api.schemas.user import UserBase
 from api.schemas.user import UserLogin
 from api.utils.hash_pw import hash_password
 from api.utils.verify import verify_password
-from api.utils import auth
+from api.utils.auth import get_current_user,create_access_token, security
+from fastapi.security import HTTPAuthorizationCredentials
 
 router = APIRouter(prefix='/users', tags=['users'])
 
+@router.get("/me", response_model=UserResponse)
+async def read_users_me(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db)
+):
+    token = credentials.credentials
+    user = await get_current_user(token, db)  # ← передаём токен и сессию
+    return user
 @router.get('/', response_model=List[UserResponse])
 async def get_users():
     try:
@@ -76,14 +85,6 @@ async def login(
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token = auth.create_access_token(user_id=user.id)
+    access_token = create_access_token(user_id=user.id)
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/me")
-async def read_users_me(
-    current_user: User = Depends(auth.get_current_user)  
-):
-    return {
-        "id": current_user.id,
-        "username": current_user.username
-    }

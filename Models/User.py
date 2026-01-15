@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, Boolean, Column, TIMESTAMP
 from sqlalchemy.orm import relationship  
 from datetime import datetime
-from . import Base
+from core.database_config import Base
 
 class User(Base):
     __tablename__ = "user"  
@@ -13,7 +13,7 @@ class User(Base):
     avatar_url = Column(String)
     created_at = Column(TIMESTAMP, default=datetime.now)
 
-    artworks = relationship("Artwork", backref="seller", foreign_keys="[Artwork.artist_id]")
+    artworks = relationship("Artwork", back_populates="artist")
     ratings_given = relationship("Rating", backref="reviewer")
     orders = relationship("Order", backref="buyer")
     listings = relationship("Listing", backref="seller")  

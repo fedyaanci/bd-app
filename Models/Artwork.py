@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, Column, TIMESTAMP, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from . import Base
+from core.database_config import Base
 
 artwork_category = Table(
     'artwork_category',
@@ -21,7 +21,7 @@ class Artwork(Base):
 
     rating = relationship("Rating", backref="artwork")
     listing = relationship("Listing", backref="artwork")
-    
+    artist = relationship("User", back_populates="artworks")
     categories = relationship(
     "Category", 
     secondary=artwork_category,
