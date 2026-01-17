@@ -12,7 +12,7 @@ from sqlalchemy import select
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-
+# на будущее можно сделать через Authx()
 security = HTTPBearer() # грубо говоря создаем движок распарса запросов (ждем заголовок auth: bearer ....) / также схема безопасности
         #Возвращает объект с:
         #scheme = "Bearer"
@@ -24,7 +24,7 @@ def create_access_token(user_id: int) -> str:
         "exp": expire #время
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM) # подписывает payload
-
+# acyncio.create_task(функция увед-я) чтобы пользовтаель не ждал 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security), 
     db: AsyncSession = Depends(get_db)
