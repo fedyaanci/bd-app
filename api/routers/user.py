@@ -1,16 +1,13 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, security
 from fastapi.security import HTTPAuthorizationCredentials
-from fastapi import security
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select  
 from typing import List
 
 from core.database_config import SessionLocal, get_db
 from models.user import User
-from api.schemas.user import UserResponse
-from api.schemas.user import UserCreate
-from api.schemas.user import UserBase
-from api.schemas.user import UserLogin
+from api.schemas.user import UserResponse, UserLogin, UserBase, UserCreate
+
 from api.utils.hash_pw import hash_password
 from api.utils.verify import verify_password
 from api.utils.auth import create_access_token, verify_token_and_get_user
